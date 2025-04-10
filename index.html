@@ -3,24 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Test Website</title>
+    <title>Emotion Detection from Face</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
     <style>
         body {
+            text-align: center;
             font-family: Arial, sans-serif;
-            padding: 20px;
         }
-        #output {
-            margin-top: 20px;
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #emotion {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        video {
+            border: 5px solid #fff;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to the API Test Website</h1>
-    <p>Click below to make an API request:</p>
-    <button id="apiCallButton">Make API Request</button>
+    <h2>Emotion Detection from Face</h2>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <div id="emotion">Emotion: </div>
 
-    <div id="output"></div>
+    <script>
+        // Load Face-api.js models from the CDN
+        async function setup() {
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js/models');
+            await faceapi.nets.faceExpressionNet.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js/models');
+        }
 
-    <script src="script.js"></script>
+        // Start emotion detection after setting up
+        async function startEmotionDetection() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const displaySize = { width: video.width, height: video.height };
+            faceapi.matchDimensions(canvas, displaySize);
+
+            // Access webcam stream
+            navigator.mediaDevices.getUserMedia({ video: {} })
+                .then((stream) => {
+                    video.srcObject = stream;
+                });
+
+            // When the video starts playing, detect faces and emotions
+            video.onplay = () => {
+                setInterval(async () => {
+                    const detections = await faceapi.detectAllFaces(video).withFaceLandmarks().withFaceExpressions();
+                    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                    canvas?.clear();
+                    faceapi.draw.drawDetections(canvas, resizedDetections);
+                    faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+
+                    // Extract emotion data and display it
+                    if (detections.length > 0) {
+                        const emotions = detections[0].expressions;
+                        const dominantEmotion = Object.keys(emotions).reduce((a, b) => emotions[a] > emotions[b] ? a : b);
+                        document.getElementById('emotion').textContent = `Emotion: ${dominantEmotion}`;
+                    }
+                }, 100);
+            };
+        }
+
+        // Load the models and start emotion detection
+        setup().then(() => startEmotionDetection());
+    </script>
 </body>
 </html>
