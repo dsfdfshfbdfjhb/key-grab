@@ -32,6 +32,11 @@
             padding: 10px;
             border-radius: 5px;
         }
+        #error-message {
+            color: red;
+            font-size: 18px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -41,6 +46,7 @@
     <!-- Canvas overlay for face detection results -->
     <canvas id="canvas" width="640" height="480"></canvas>
     <div id="emotion">Emotion: </div>
+    <div id="error-message"></div>
 
     <script>
         // Load Face-api.js models from CDN
@@ -57,13 +63,13 @@
             const displaySize = { width: video.width, height: video.height };
             faceapi.matchDimensions(canvas, displaySize);
 
-            // Access webcam stream
+            // Access webcam stream and request permission
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
                 video.srcObject = stream; // Set the video source to the webcam stream
             } catch (err) {
                 console.error('Error accessing webcam: ', err);
-                alert('Camera access denied or not available!');
+                document.getElementById('error-message').textContent = 'Camera access denied or not available. Please allow access to the camera.';
                 return;
             }
 
