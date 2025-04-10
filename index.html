@@ -17,10 +17,13 @@
       text-align: center;
     }
 
+    button, input[type=text] {
+      margin: 10px;
+    }
+
     button {
       padding: 10px 20px;
       font-size: 1.2rem;
-      margin: 10px;
       background: #222;
       color: #00ff00;
       border: 2px solid #00ff00;
@@ -42,13 +45,36 @@
       margin-top: 10px;
       font-size: 1.1rem;
     }
+
+    .input-container {
+      margin: 15px;
+    }
+
+    input[type=text] {
+      width: 80px;
+      padding: 10px;
+      text-align: center;
+      font-size: 1.2rem;
+      background: #222;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      border-radius: 8px;
+    }
+
   </style>
 </head>
 <body>
   <h1>💻 Computer Stress Test</h1>
-  <p>Click start to begin stressing your CPU. Use with caution!</p>
+  <p>Enter a stress strength (no maximum) and click Start to begin.</p>
+
+  <div class="input-container">
+    <label for="strengthInput">Stress Strength: </label>
+    <input type="text" id="strengthInput" value="5" />
+  </div>
+
   <button onclick="startTest()">Start Test</button>
   <button onclick="stopTest()">Stop Test</button>
+
   <div id="status">Status: Idle</div>
   <div id="performance"></div>
 
@@ -57,16 +83,7 @@
     let iterations = 0;
     let startTime;
     let interval;
-
-    function heavyCalculation() {
-      let x = 0;
-      while (isRunning) {
-        for (let i = 0; i < 1e10; i++) {
-          x += Math.sqrt(i * Math.random());
-        }
-        iterations++;
-      }
-    }
+    let workers = [];
 
     function startTest() {
       if (isRunning) return;
@@ -75,20 +92,28 @@
       startTime = Date.now();
       document.getElementById("status").textContent = "Status: Running...";
 
+      const strengthInput = document.getElementById("strengthInput").value;
+      const strength = parseInt(strengthInput) || 5; // Get stress level (default 5 if invalid)
+      const loopSize = strength * 1e6;
+
       interval = setInterval(() => {
         const seconds = (Date.now() - startTime) / 1000;
-        document.getElementById("performance").textContent = 
+        document.getElementById("performance").textContent =
           `Iterations: ${iterations} | Time: ${seconds.toFixed(2)}s | Speed: ${(iterations / seconds).toFixed(2)} it/s`;
       }, 500);
 
-      // Start CPU stress in a separate thread using Web Workers
-      for (let i = 0; i < navigator.hardwareConcurrency; i++) {
+      const threadCount = navigator.hardwareConcurrency;
+      for (let i = 0; i < threadCount; i++) {
         const worker = new Worker(URL.createObjectURL(new Blob([`
           let isRunning = true;
-          self.onmessage = e => { if (e.data === 'stop') isRunning = false; };
+          self.onmessage = e => {
+            if (e.data === 'stop') isRunning = false;
+            if (e.data.loopSize) loopSize = e.data.loopSize;
+          };
+          let loopSize = ${loopSize};
           let x = 0;
           while (isRunning) {
-            for (let i = 0; i < 1e6; i++) {
+            for (let i = 0; i < loopSize; i++) {
               x += Math.sqrt(i * Math.random());
             }
             self.postMessage('tick');
@@ -96,7 +121,7 @@
         `], { type: 'text/javascript' })));
 
         worker.onmessage = () => { iterations++; };
-        window[`worker${i}`] = worker;
+        workers.push(worker);
       }
     }
 
@@ -106,13 +131,11 @@
       document.getElementById("status").textContent = "Status: Stopped";
       clearInterval(interval);
 
-      for (let i = 0; i < navigator.hardwareConcurrency; i++) {
-        const worker = window[`worker${i}`];
-        if (worker) {
-          worker.postMessage('stop');
-          worker.terminate();
-        }
-      }
+      workers.forEach(worker => {
+        worker.postMessage('stop');
+        worker.terminate();
+      });
+      workers = [];
     }
   </script>
 </body>
