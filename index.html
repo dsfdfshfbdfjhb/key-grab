@@ -61,7 +61,7 @@
     function heavyCalculation() {
       let x = 0;
       while (isRunning) {
-        for (let i = 0; i < 1e6; i++) {
+        for (let i = 0; i < 1e10; i++) {
           x += Math.sqrt(i * Math.random());
         }
         iterations++;
