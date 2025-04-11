@@ -1,142 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Computer Stress Test</title>
+  <title>Crash Button</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: #00ff00;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
       text-align: center;
+      margin-top: 100px;
+      background-color: #f8f9fa;
     }
-
-    button, input[type=text] {
-      margin: 10px;
-    }
-
     button {
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      background: #222;
-      color: #00ff00;
-      border: 2px solid #00ff00;
-      border-radius: 8px;
+      padding: 20px 40px;
+      font-size: 20px;
+      background-color: #ff4c4c;
+      border: none;
+      border-radius: 10px;
+      color: white;
       cursor: pointer;
     }
-
     button:hover {
-      background: #00ff00;
-      color: #000;
+      background-color: #ff1a1a;
     }
-
-    #status {
-      font-size: 1.5rem;
-      margin-top: 20px;
-    }
-
-    #performance {
-      margin-top: 10px;
-      font-size: 1.1rem;
-    }
-
-    .input-container {
-      margin: 15px;
-    }
-
-    input[type=text] {
-      width: 80px;
-      padding: 10px;
-      text-align: center;
-      font-size: 1.2rem;
-      background: #222;
-      color: #00ff00;
-      border: 2px solid #00ff00;
-      border-radius: 8px;
-    }
-
   </style>
 </head>
 <body>
-  <h1>💻 Computer Stress Test</h1>
-  <p>Enter a stress strength (no maximum) and click Start to begin.</p>
 
-  <div class="input-container">
-    <label for="strengthInput">Stress Strength: </label>
-    <input type="text" id="strengthInput" value="5" />
-  </div>
-
-  <button onclick="startTest()">Start Test</button>
-  <button onclick="stopTest()">Stop Test</button>
-
-  <div id="status">Status: Idle</div>
-  <div id="performance"></div>
+  <h2>Click the Button</h2>
+  <button onclick="crash()">Do NOT Click This</button>
 
   <script>
-    let isRunning = false;
-    let iterations = 0;
-    let startTime;
-    let interval;
-    let workers = [];
-
-    function startTest() {
-      if (isRunning) return;
-      isRunning = true;
-      iterations = 0;
-      startTime = Date.now();
-      document.getElementById("status").textContent = "Status: Running...";
-
-      const strengthInput = document.getElementById("strengthInput").value;
-      const strength = parseInt(strengthInput) || 5; // Get stress level (default 5 if invalid)
-      const loopSize = strength * 1e6;
-
-      interval = setInterval(() => {
-        const seconds = (Date.now() - startTime) / 1000;
-        document.getElementById("performance").textContent =
-          `Iterations: ${iterations} | Time: ${seconds.toFixed(2)}s | Speed: ${(iterations / seconds).toFixed(2)} it/s`;
-      }, 500);
-
-      const threadCount = navigator.hardwareConcurrency;
-      for (let i = 0; i < threadCount; i++) {
-        const worker = new Worker(URL.createObjectURL(new Blob([`
-          let isRunning = true;
-          self.onmessage = e => {
-            if (e.data === 'stop') isRunning = false;
-            if (e.data.loopSize) loopSize = e.data.loopSize;
-          };
-          let loopSize = ${loopSize};
-          let x = 0;
-          while (isRunning) {
-            for (let i = 0; i < loopSize; i++) {
-              x += Math.sqrt(i * Math.random());
-            }
-            self.postMessage('tick');
-          }
-        `], { type: 'text/javascript' })));
-
-        worker.onmessage = () => { iterations++; };
-        workers.push(worker);
+    function crash() {
+      if(confirm("Do you REALLY want to crash your browser?")) {
+        setTimeout(function() {
+          while (1) location.reload(1);
+        }, 1000);
       }
     }
-
-    function stopTest() {
-      if (!isRunning) return;
-      isRunning = false;
-      document.getElementById("status").textContent = "Status: Stopped";
-      clearInterval(interval);
-
-      workers.forEach(worker => {
-        worker.postMessage('stop');
-        worker.terminate();
-      });
-      workers = [];
-    }
   </script>
+
 </body>
 </html>
