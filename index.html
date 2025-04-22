@@ -1,29 +1,32 @@
-import java.awt.*;
-import java.util.Timer;
-import java.util.TimerTask;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mouse Lock Demo</title>
+</head>
+<body style="margin:0; background:#222; height:100vh; display:flex; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
 
-public class MouseLocker {
+  <div>Click anywhere to lock the mouse</div>
 
-    public static void main(String[] args) {
-        try {
-            Robot robot = new Robot();
+  <script>
+    document.body.addEventListener("click", function () {
+      document.body.requestPointerLock();
+    });
 
-            // Get screen size
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int centerX = screenSize.width / 2;
-            int centerY = screenSize.height / 2;
+    document.addEventListener("pointerlockchange", () => {
+      if (document.pointerLockElement === document.body) {
+        console.log("Mouse locked!");
+      } else {
+        console.log("Mouse unlocked!");
+      }
+    });
 
-            // Move mouse to center repeatedly
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    robot.mouseMove(centerX, centerY);
-                }
-            }, 0, 10); // every 10 milliseconds
+    // Capture mouse movement
+    document.addEventListener("mousemove", (e) => {
+      if (document.pointerLockElement === document.body) {
+        console.log("Mouse moved: ", e.movementX, e.movementY);
+      }
+    });
+  </script>
 
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
-    }
-}
+</body>
+</html>
