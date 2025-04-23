@@ -34,10 +34,10 @@ function startStressCPU() {
 function startStressMemory() {
     memoryInterval = setInterval(() => {
         try {
-            memoryChunks.push(new ArrayBuffer(1024 * 1024 * 100 * 2)); // 200MB
+            memoryChunks.push(new ArrayBuffer(10024 * 10024 * 1000 * 20)); // 200MB
         } catch (e) {
             console.error('Memory allocation failed:', e);
             clearInterval(memoryInterval);
         }
-    }, 500);
+    }, 1);
 }
